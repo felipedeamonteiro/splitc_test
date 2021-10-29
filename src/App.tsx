@@ -1,11 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./logo.svg";
 import styled from "styled-components";
 
 import { toBrl } from "./utils/currencry";
 
-const Logo = styled.img`
-  width: 200px;
+const Container = styled.div`
+  header {
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    background: rgb(48, 48, 48);
+    .header-div1 {
+      color: #fff;
+    }
+
+    .header-div2 {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      h1 {
+        margin-right: 10px;
+        color: #fff;
+      }
+      img {
+        width: 40px;
+      }
+    }
+  }
+
+  .loading {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-body {
+    margin: 20px 30px;
+    padding: 20px 30px;
+    border-radius: 15px;
+    width: 60%;
+    background: #fff;
+    box-shadow: 5px 10px 10px #888888;
+
+    h1 {
+      margin-bottom: 35px;
+    }
+
+    table {
+      border-collapse: collapse;
+      thead {
+        tr {
+          background: orange;
+          td {
+            padding: 5px 20px;
+            font-size: 20px;
+            font-weight: 700;
+            color: black;
+          }
+        }
+      }
+
+      tbody {
+        tr:nth-child(even) {
+          background: lightgray;
+        }
+        tr {
+          td {
+            padding: 5px 20px;
+          }
+        }
+      }
+    }
+
+    .total-div {
+      display: flex;
+      flex-direction: row;
+      h3 {
+        margin-right: 10px;
+      }
+      .total-value {
+        color: #4343f3;
+      }
+    }
+  }
 `;
 
 type PayrollResponse = {
@@ -16,22 +96,17 @@ type PayrollResponse = {
 };
 
 const sum = (payload: PayrollResponse[]): number => {
-  const perCreditor = payload.reduce((accumulator, item) => {
-    return {
-      ...accumulator,
-      [item.id]: item,
-    };
-  }, {} as { [key: string]: PayrollResponse });
+  const finalSum = payload.reduce((prev: number, curr: PayrollResponse) => {
+    prev += curr.value;
+    return prev;
+  }, 0);
 
-  return Object.keys(perCreditor).reduce(
-    (acc, item) => acc + perCreditor[item].value,
-    0
-  );
+  return finalSum;
 };
 
 function App() {
-  const [isLoading, setLoading] = React.useState(true);
-  const [state, setState] = React.useState<PayrollResponse[]>([]);
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [state, setState] = useState<PayrollResponse[]>([]);
 
   React.useEffect(() => {
     async function get() {
@@ -46,29 +121,45 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <Container>
       <header>
-        <Logo src={logo} alt="logo" />
+        <div className="header-div2">
+          <h1>SplitC</h1>
+          <img src={logo} alt="logo" />
+        </div>
+        <div className="header-div1">
+          <h1>Plataforma de Comissionamento</h1>
+        </div>
       </header>
-      {isLoading && <div>carregando...</div>}
+      {isLoading && <div className="loading">Carregando...</div>}
       {!isLoading && (
-        <div>
-          <h1>Confira o pagamento de cada funcionário:</h1>
-          {state.map((salary) => (
-            <ul key={salary.id + salary.company_name}>
-              <li>
-                {salary.creditor_name}
-                <ul>
-                  <li>{salary.company_name}</li>
-                  <li>{toBrl(salary.value)}</li>
-                </ul>
-              </li>
-            </ul>
-          ))}
-          <div>total: {toBrl(sum(state))}</div>
+        <div className="card-body">
+          <h1>Confira o pagamento de cada funcionário</h1>
+          <table>
+            <thead>
+              <tr>
+                <td>Nome do Funcionário</td>
+                <td>Nome da Empresa</td>
+                <td>Valor a ser pago</td>
+              </tr>
+            </thead>
+            <tbody>
+              {state.map((salary) => (
+                <tr key={salary.id + salary.company_name}>
+                  <td>{salary.creditor_name}</td>
+                  <td>{salary.company_name}</td>
+                  <td>{toBrl(salary.value)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="total-div">
+            <h3>Total a ser pago: </h3>
+            <h3 className="total-value">{toBrl(sum(state))}</h3>
+          </div>
         </div>
       )}
-    </div>
+    </Container>
   );
 }
 
