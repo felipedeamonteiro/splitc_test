@@ -1,4 +1,4 @@
-# Getting Started With The Challenge
+# Getting Started With The Challenge Response
 
 ### 1. `yarn`
 Install the project and it's dependencies.
