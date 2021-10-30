@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import styled from "styled-components";
 
@@ -108,7 +108,7 @@ function App() {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [state, setState] = useState<PayrollResponse[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function get() {
       const d = await fetch(
         "https://splitc-public-files-bucket.s3.us-east-1.amazonaws.com/recruitment-challenge-payload.json"

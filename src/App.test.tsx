@@ -16,7 +16,22 @@ describe("payroll", () => {
     rest.get(
       "https://splitc-public-files-bucket.s3.us-east-1.amazonaws.com/recruitment-challenge-payload.json",
       (req, res, ctx) => {
-        return res(ctx.json(response));
+        return res(
+          ctx.json([
+            {
+              id: "487e2cbe-602d-4bc0-a4bf-e0d8cfa1fbfb",
+              creditor_name: "Ciclano",
+              company_name: "CNPJ 1",
+              value: 369.1734,
+            },
+            {
+              id: "487e2cbe-602d-4bc0-a4bf-e0d8cfa1fbfb",
+              creditor_name: "Ciclano",
+              company_name: "CNPJ 2",
+              value: 12369.1734,
+            },
+          ])
+        );
       }
     )
   );
@@ -35,5 +50,11 @@ describe("payroll", () => {
     render(<App />);
 
     await waitFor(() => screen.getAllByText(/Ciclano/));
+  });
+
+  it("should make the correct sum of total values", async () => {
+    render(<App />);
+
+    await waitFor(() => screen.getAllByText("R$ 12.738,35"));
   });
 });
